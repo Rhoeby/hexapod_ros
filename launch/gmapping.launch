@@ -1,0 +1,34 @@
+<launch>
+  <arg name="model" />
+  <arg name="gui" default="False" />
+  <param name="robot_description" textfile="$(arg model)" />
+  <param name="use_gui" value="$(arg gui)"/>
+  <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" ></node>
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="state_publisher" />
+
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find hexapod_ros)/hexapod_ros_gmapping.rviz" />
+
+  <node pkg="robot_pose_ekf" type="robot_pose_ekf" name="robot_pose_ekf">
+    <param name="output_frame" value="odom_combined"/>
+    <param name="freq" value="30.0"/>
+    <param name="sensor_timeout" value="1.0"/>
+    <param name="odom_used" value="true"/>
+    <param name="imu_used" value="true"/>
+    <param name="vo_used" value="false"/>
+    <param name="debug" value="false"/>
+    <param name="self_diagnose" value="false"/>
+  </node>
+
+  <node pkg="gmapping" type="slam_gmapping" name="slam_gmapping" output="screen">
+    <rosparam>
+    base_frame: base_footprint
+    odom_frame: odom_combined
+# These are the TR map_03 settings
+    maxUrange: 3.0
+    maxRange: 3.1
+    linearUpdate: 0.2
+    </rosparam>
+    <remap from="/scan" to="/laser_data" />    
+  </node>
+
+</launch>
