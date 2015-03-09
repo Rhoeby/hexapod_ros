@@ -9,12 +9,12 @@ Dynamics (see website: http://wwww.rhoeby.com).
 Hardware Used
 -------------
 
-Robotis Bioloid "Spider" chassis with custom legs
-Robotis Cm9.04 MCU board
-Nexus 4 phone provides IMU (and tele-prescence camera!)
-Rhoeby Dynamics R2D Infra-Red LiDAR Scanner
-Bluetooth link to robot for command and status back
-Remote laptop running ROS Indigo
+  - Robotis Bioloid "Spider" chassis with custom legs
+  - Robotis Cm9.04 MCU board
+  - Nexus 4 phone provides IMU (and tele-prescence camera!)
+  - Rhoeby Dynamics R2D Infra-Red LiDAR Scanner
+  - Bluetooth link to robot for command and status back
+  - Remote laptop running ROS Indigo
 
 Software Features
 -----------------
