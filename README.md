@@ -19,10 +19,10 @@ Hardware Used
 Software Features
 -----------------
 
-3-DOF Inverse Kinematic leg control
-Holonomic-capable gait
-Odometric feedback
-ROS node for robot control
+  - 3-DOF Inverse Kinematic leg control
+  - Holonomic-capable gait
+  - Odometric feedback
+  - ROS node for robot control
 
 Installation
 ------------
@@ -37,9 +37,11 @@ CM9.04 binary on github:
 
 ROS Package installation:
 
-  install robot_pose_ekf
-  copy hexapod_ros into catkin workspace
-  do 'catkin_make'
+  1. install robot_pose_ekf
+  
+  2. copy hexapod_ros into catkin workspace
+  
+  3. do 'catkin_make'
 
 Other:
 
