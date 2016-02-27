@@ -243,11 +243,11 @@ void HexapodNode::scanPublish(void)
   scan.range_max = 3.6576;
 
   scan.header.stamp = current_time - ros::Duration(scan.scan_time);
-  scan.angle_max = 3.142;
+  scan.angle_max = 3.141592;
   scan.angle_min = -scan.angle_max;
 
   scan.time_increment = scan.scan_time / robot_status.samples_per_scan_;
-  scan.angle_increment = 2 * 3.142 / robot_status.samples_per_scan_;
+  scan.angle_increment = 2 * 3.141592 / robot_status.samples_per_scan_;
   scan.ranges.resize(robot_status.samples_per_scan_);
 
   robot_.getScanData(scan_data_);
