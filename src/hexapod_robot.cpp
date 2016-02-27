@@ -35,6 +35,7 @@
 *********************************************************************/
 
 #include <fcntl.h>
+#include <termios.h>
 
 #include "ros/ros.h"
 #include "hexapod_robot.h"
@@ -42,7 +43,11 @@
 namespace hexapod_ros
 {
 
-#define ROBOT_MSG_SIZE_MAX 1024
+// options
+#define USE_IMPROVED_PORT_SETUP 1
+
+//#define ROBOT_MSG_SIZE_MAX 1024
+#define ROBOT_MSG_SIZE_MAX 2048
 #define ROBOT_CMD_SIZE_MAX 5
 
 //#define SMOOTHING_BUFFER_SIZE 4 // golden
@@ -119,6 +124,9 @@ void Robot::open(const std::string port_name)
   int32_t n;
   int32_t i;
   uint8_t ch;
+#if USE_IMPROVED_PORT_SETUP
+  struct termios new_termios;
+#endif
 
   fd_ = ::open(port_name.c_str(), O_RDWR | O_NOCTTY | O_NDELAY);
   if (fd_ == -1)
@@ -131,7 +139,14 @@ void Robot::open(const std::string port_name)
     fcntl(fd_, F_SETFL, 0);
   }
 
-  ROS_DEBUG("Polling (for BT) before executing commands...\r");
+#if USE_IMPROVED_PORT_SETUP
+  tcgetattr(fd_, &new_termios);
+  cfmakeraw(&new_termios);
+  cfsetospeed(&new_termios, B115200);
+  tcsetattr(fd_, TCSANOW, &new_termios);
+#endif
+
+  ROS_INFO("Polling (for BT) before executing commands...\r");
   for (i=0; i< 10; i++)
   {
     // TODO: is this still needed? replace with ros version?
@@ -160,7 +175,8 @@ void Robot::open(const std::string port_name)
 
   // set scanner speed
   ROS_DEBUG("4\r");
-  n = ::write(fd_, "4", 1);
+//  n = ::write(fd_, "4", 1);
+  n = ::write(fd_, "3", 1);
 
   // enter holonomic mode
   ROS_DEBUG("n\r");
@@ -276,11 +292,11 @@ void Robot::calcScanData(void)
 
     tmp = scan_value / 1000.0;
 
-//		ROS_INFO("scan_value: %d, range (in meters/inches) %f / %f\r", scan_value, tmp, (tmp * 100/2.54));
+//    ROS_INFO("scan_value: %d, range (in meters/inches) %f / %f\r", scan_value, tmp, (tmp * 100/2.54));
 
     scan_data_buffer_[i/2] = tmp;
   }
-//	ROS_INFO("\r");
+//  ROS_INFO("\r");
 
   status_.samples_per_scan_ = msg_payload_length_ / 2;
 
@@ -324,7 +340,7 @@ void Robot::readMsg(void)
       uint8_t ch;
 
       ret = ::read(fd_, &ch, 1);
-//			ROS_INFO("%c\r", ch);
+//      ROS_INFO("%c\r", ch);
       continue;
     }
 
@@ -474,7 +490,7 @@ void Robot::setVelocities(const double x, const double y, const double th)
   cmd_buffer_[4] = (int8_t)(smoothed_th * -167);
 
 #if 0
-	ROS_INFO("smoothed x: %f [%f], y: %f [%f], th: %f [%f]\r",
+  ROS_INFO("smoothed x: %f [%f], y: %f [%f], th: %f [%f]\r",
       smoothed_x, remapped_x, 
       smoothed_y, remapped_y,
       smoothed_th, th);
